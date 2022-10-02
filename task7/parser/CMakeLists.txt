@@ -8,12 +8,14 @@ set (hdrs
 	string_util.cpp
 	rewrite_states.cpp
 	clean_not_followed.cpp
+	clean_rand_values.cpp
 )
 
 set (srcs
 	string_util.h
 	rewrite_states.h
 	clean_not_followed.h
+	clean_rand_values.h
 )
 
 add_executable ( ${PROJECT_NAME} ${hdrs} ${srcs} ${rsrc} main.cpp )
