@@ -141,16 +141,18 @@ int main(int argc, char* argv[])
     */
 
     //insert_val_info(argv[1], argv[2]);
-    std::map<std::string, std::string> val_list;
+    /*std::map<std::string, std::string> val_list;
 
     if (!load_resolved_vals_map("vals_list.txt", val_list)) {
         std::cout << "Loading failed!\n";
         return -1;
     }
 
-    /*for (auto itr = val_list.begin(); itr != val_list.end(); ++itr) {
+    for (auto itr = val_list.begin(); itr != val_list.end(); ++itr) {
         std::cout << "[" << itr->first << "] = [" << itr->second << "]" << std::endl;
     } */
-    replace_vals(argv[1], argv[2], val_list);
+    //replace_vals(argv[1], argv[2], val_list);
+
+    rewrite_states(argv[1], argv[2]);
     return 1;
 }

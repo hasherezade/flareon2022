@@ -81,7 +81,9 @@ bool collect_cases(const std::string& infile, std::map<int, std::string>& cases)
     int current_case = 0;
     std::string line;
     for (size_t line_count = 0; std::getline(file, line); line_count++) {
-
+        if (line.find("my_random();") != std::string::npos) {
+            continue;
+        }
         int number = fetch_case_number(line);
         if (number != 0) {
             //ofile << "\nNUM: [" << number << "]\n";
@@ -92,6 +94,7 @@ bool collect_cases(const std::string& infile, std::map<int, std::string>& cases)
             current_case = 0;
             continue;
         }
+
         if (line.find("state = ") != std::string::npos) {
             continue;
         }
@@ -124,7 +127,7 @@ bool process_cases(const std::string& infile, const std::string& outfile, std::m
     size_t i = 0;
     for (auto itr = num_to_case.begin(); itr != num_to_case.end(); ++itr) {
         int case_num = itr->second;
-        ofile << "\tvalidate_arr(b, " << i++ << ");" << std::endl;
+        //ofile << "\tvalidate_arr(b, " << i++ << ");" << std::endl;
         //ofile << case_num << " :\n";
         ofile << cases[case_num] << std::endl;
     }
