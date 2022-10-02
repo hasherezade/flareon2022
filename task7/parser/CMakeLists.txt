@@ -7,11 +7,13 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 set (hdrs
 	string_util.cpp
 	rewrite_states.cpp
+	clean_not_followed.cpp
 )
 
 set (srcs
 	string_util.h
 	rewrite_states.h
+	clean_not_followed.h
 )
 
 add_executable ( ${PROJECT_NAME} ${hdrs} ${srcs} ${rsrc} main.cpp )
