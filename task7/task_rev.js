@@ -1,40 +1,7 @@
-function write_formatted_val(b)
-{
-	for (var i = 0; i < b.length; i++) {
-		if ( i % 9 === 0) {
-			document.write("<br/>");
-		}
-		document.write(b[i]+", ");
-	}	
-}
-
-function validate_arr(b, cntr)
-{
-	var is_ok = true;
-	var i = 0;
-	for (i = 0; i < b.length; i++) {
-		if (b[i] == valid_state[cntr][i]) {
-			continue;
-		}
-		document.write("Mismatch at:" + i + " curr value: " + b[i] + " != " + valid_state[cntr][i] + "<br/>");
-		is_ok = false;
-		break;
-	}
-
-	if (!is_ok) {
-		document.write("state = " + state);
-		document.write("<br/>");
-		document.write("Nope valid_state = " + valid_state[cntr]);
-		exit();
-	}
-	document.write("OK validation passed!");
-	document.write("<br/>");
-}
-
 function run()
 {
 	document.write("Ready...<br/>");
-	var flag = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+	
 	var b = [106, 196, 106, 178, 174, 102, 31, 91, 66, 255, 86, 196, 74, 139, 219, 166, 106, 4, 211, 68, 227, 72, 156, 38, 239, 153, 223, 225, 73, 171, 51, 4, 234, 50, 207, 82, 18, 111, 180, 212, 81, 189, 73, 76];
 	
 	document.write("Checking the flag...<br/>");
@@ -2770,7 +2737,9 @@ function run()
 
 	for (i = 0; i < b.length; i++) {
 		b[i] &= 0xFF;
+		document.write(String.fromCharCode(b[i]));
 	}
+	document.write("<br/>");
 	document.write("Final:");
 	document.write("<br/>");
 	document.write(b);
