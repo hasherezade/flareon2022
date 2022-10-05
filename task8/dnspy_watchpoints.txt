@@ -1,0 +1,11 @@
+// Token: 0x060000BA RID: 186 RVA: 0x00013E04 File Offset: 0x0001AE04
+public static object flared_70(InvalidProgramException e, object[] a)
+
+8061:		return FLARE15.flare_67(b, metadataToken, a);
+
+$FUNCTION {System.IO.File.AppendAllText(System.IO.Path.Combine("C:\\decoded\\new", "log.txt"), System.String.Format(@"{0:X} {1}; ", tk, methodBase));} {tk} {methodBase}
+
+public static object flared_67(byte[] b, int tk, object[] a):
+7839: 		MethodInfo methodInfo = (MethodInfo)methodBase;
+
+$FUNCTION {System.IO.File.AppendAllText(System.IO.Path.Combine("C:\\decoded\\new", "log.txt"), System.String.Format(@"{0:X} {1}; ", tk, methodBase));} {tk} {methodBase}
