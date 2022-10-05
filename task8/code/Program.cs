@@ -26,17 +26,108 @@ namespace ConsoleApp1
             return isOk;
         }
 
-
-        static void Main(string[] args)
+        static void stage1DecodeChunks()
         {
-            FLARE15.flare_74();
-
             decodeAndSave(FLARE15.gh_m, FLARE15.gh_b, "C:\\decoded\\flared_66.bin");
             decodeAndSave(FLARE15.d_m, FLARE15.d_b, "C:\\decoded\\flared_47.bin");
             decodeAndSave(FLARE15.gs_m, FLARE15.gs_b, "C:\\decoded\\flared_69.bin");
             decodeAndSave(FLARE15.cl_m, FLARE15.cl_b, "C:\\decoded\\flared_67.bin");
             decodeAndSave(FLARE15.pe_m, FLARE15.pe_b, "C:\\decoded\\flared_35.bin");
             decodeAndSave(new Dictionary<uint, int>(), FLARE15.rt_b, "C:\\decoded\\flared_68.bin");
+        }
+
+        static byte[] decodeStage2Chunk(byte[] d, string directory, string filename)
+        {
+            string path = Path.Combine(directory, filename);
+            byte[] b = FLARE12.flared_47(new byte[]
+            {
+                18,
+                120,
+                171,
+                223
+            }, d);
+            byte[] next = FLARE15.flared_67(b);
+            File.WriteAllBytes(path, next);
+            return next;
+        }
+
+        static Dictionary<int, int> createMapOfTokens(string tokensFile)
+        {
+            string tokenStr = "Token: ";
+            string offsetStr = "File Offset: ";
+            string sepStr = " RID:";
+            var tokenToOffset = new Dictionary<int, int>();
+            foreach (string line in System.IO.File.ReadLines(tokensFile))
+            {
+                int tokenStart = line.IndexOf(tokenStr);
+                int sep = line.IndexOf(sepStr);
+                int offsetStart = line.IndexOf(offsetStr);
+
+
+                int len = sep - (tokenStart + tokenStr.Length);
+                string tokenPart = line.Substring(tokenStart + tokenStr.Length, len);
+                string offsetPart = line.Substring(offsetStart + offsetStr.Length);
+
+                int tokenVal = Convert.ToInt32(tokenPart, 16);
+                int offsetVal = Convert.ToInt32(offsetPart, 16);
+
+                Console.WriteLine(System.String.Format(@"Adding: '{0}' '{1:X}'", tokenPart, offsetVal));
+
+                tokenToOffset[tokenVal] = offsetVal;
+            }
+            return tokenToOffset;
+        }
+
+        static void stage2DecodeDirectory(string sourceDirectory, string outDirectory, string tokensFile, string fileToPatch)
+        {
+            try
+            {
+                const int hdrSize = 0xC;
+                byte []fileBuf = File.ReadAllBytes(fileToPatch);
+                var tokenToOffset = createMapOfTokens(tokensFile);
+                var txtFiles = Directory.EnumerateFiles(sourceDirectory, "*.txt", SearchOption.AllDirectories);
+                
+                foreach (string currentFile in txtFiles)
+                {
+                    Console.WriteLine(currentFile);
+                    string filename = Path.GetFileName(currentFile);
+                    if (filename == "log.txt")
+                    {
+                        continue;
+                    }
+                    string tokenName = Path.GetFileNameWithoutExtension(filename);
+                    int tokenVal = Convert.ToInt32(tokenName, 16);
+                    Console.WriteLine(System.String.Format(@"tokenName: '{0:X}'", tokenVal));
+
+
+                    byte []d = File.ReadAllBytes(currentFile);
+                    byte []decChunk = decodeStage2Chunk(d, outDirectory, filename);
+
+                    if (tokenToOffset.ContainsKey(tokenVal))
+                    {
+                        int offset = tokenToOffset[tokenVal];
+                        Console.WriteLine(System.String.Format(@"Parsed: '{0:X}' '{1:X}'", tokenVal, offset));
+
+                        Buffer.BlockCopy(decChunk, 0, fileBuf, offset + hdrSize, decChunk.Length);
+                    }
+                }
+
+                string outExe = Path.Combine(outDirectory, "patched.exe");
+                File.WriteAllBytes(outExe, fileBuf);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            FLARE15.flare_74();
+
+            
+
+            stage2DecodeDirectory("C:\\decoded\\new", "C:\\decoded\\new_decoded", "C:\\decoded\\all_tokens.txt", "C:\\decoded\\FlareOn.Backdoor_p2a.exe");
 
             //
             Console.Write("Decoded!\n");

@@ -6553,7 +6553,7 @@ namespace FlareOn.Backdoor
 			num += (int)b[o + 1] * 256;
 			return num + (int)b[o];
 		}
-
+		/*
 		// Token: 0x060000B2 RID: 178 RVA: 0x00012B84 File Offset: 0x00019B84
 		public static string flared_66(int t)
 		{
@@ -6597,7 +6597,7 @@ namespace FlareOn.Backdoor
 			}
 			return stringBuilder.ToString();
 		}
-
+		*/
 		public static byte[] flared_69(string h)
 		{
 			string location = Assembly.GetExecutingAssembly().Location;
@@ -6660,7 +6660,7 @@ namespace FlareOn.Backdoor
 		}
 
 		// Token: 0x060000B4 RID: 180 RVA: 0x00012E00 File Offset: 0x00019E00
-		public static object flared_67(byte[] b, int tk, object[] a)
+		public static byte[] flared_67(byte[] b)
 		{
 			Dictionary<uint, FLARE06.OT> dictionary = new Dictionary<uint, FLARE06.OT>
 			{
@@ -7573,26 +7573,7 @@ namespace FlareOn.Backdoor
 					FLARE06.OT.A
 				}
 			};
-			Module module = typeof(Program).Module;
-			MethodBase methodBase = module.ResolveMethod(tk);
-			MethodInfo methodInfo = (MethodInfo)methodBase;
-			ParameterInfo[] parameters = methodInfo.GetParameters();
-			Type[] array = new Type[parameters.Length];
-			SignatureHelper localVarSigHelper = SignatureHelper.GetLocalVarSigHelper();
-			for (int i = 0; i < array.Length; i++)
-			{
-				array[i] = parameters[i].ParameterType;
-			}
-			Type declaringType = methodBase.DeclaringType;
-			DynamicMethod dynamicMethod = new DynamicMethod("", methodInfo.ReturnType, array, declaringType, true);
-			DynamicILInfo dynamicILInfo = dynamicMethod.GetDynamicILInfo();
-			MethodBody methodBody = methodInfo.GetMethodBody();
-			foreach (LocalVariableInfo localVariableInfo in methodBody.LocalVariables)
-			{
-				localVarSigHelper.AddArgument(localVariableInfo.LocalType);
-			}
-			byte[] signature = localVarSigHelper.GetSignature();
-			dynamicILInfo.SetLocalSignature(signature);
+
 			int j = 0;
 			while (j < b.Length)
 			{
@@ -7615,54 +7596,8 @@ namespace FlareOn.Backdoor
 						{
 							uint num = (uint)FLARE15.flared_68(b, j);
 							num ^= 2727913149U;
-							bool flag2 = num >= 1879048192U && num < 1879113727U;
-							int tokenFor;
-							if (flag2)
-							{
-								tokenFor = dynamicILInfo.GetTokenFor(module.ResolveString((int)num));
-							}
-							else
-							{
-								Type declaringType2 = methodInfo.DeclaringType;
-								Type[] genericTypeArguments = null;
-								Type[] genericMethodArguments = null;
-								bool flag3 = declaringType2.IsGenericType || declaringType2.IsGenericTypeDefinition;
-								if (flag3)
-								{
-									genericTypeArguments = declaringType2.GetGenericArguments();
-								}
-								bool flag4 = methodInfo.IsGenericMethod || methodInfo.IsGenericMethodDefinition;
-								if (flag4)
-								{
-									genericMethodArguments = methodInfo.GetGenericArguments();
-								}
-								MemberInfo memberInfo = declaringType2.Module.ResolveMember((int)num, genericTypeArguments, genericMethodArguments);
-								bool flag5 = memberInfo.GetType().Name == "RtFieldInfo";
-								if (flag5)
-								{
-									tokenFor = dynamicILInfo.GetTokenFor(((FieldInfo)memberInfo).FieldHandle, ((TypeInfo)((FieldInfo)memberInfo).DeclaringType).TypeHandle);
-								}
-								else
-								{
-									bool flag6 = memberInfo.GetType().Name == "RuntimeType";
-									if (flag6)
-									{
-										tokenFor = dynamicILInfo.GetTokenFor(((TypeInfo)memberInfo).TypeHandle);
-									}
-									else
-									{
-										bool flag7 = memberInfo.Name == ".ctor" || memberInfo.Name == ".cctor";
-										if (flag7)
-										{
-											tokenFor = dynamicILInfo.GetTokenFor(((ConstructorInfo)memberInfo).MethodHandle, ((TypeInfo)((ConstructorInfo)memberInfo).DeclaringType).TypeHandle);
-										}
-										else
-										{
-											tokenFor = dynamicILInfo.GetTokenFor(((MethodInfo)memberInfo).MethodHandle, ((TypeInfo)((MethodInfo)memberInfo).DeclaringType).TypeHandle);
-										}
-									}
-								}
-							}
+							uint tokenFor = num;
+							//Console.WriteLine("tokenNum: {0:X}", tokenFor);
 							b[j] = (byte)tokenFor;
 							b[j + 1] = (byte)(tokenFor >> 8);
 							b[j + 2] = (byte)(tokenFor >> 16);
@@ -7689,11 +7624,12 @@ namespace FlareOn.Backdoor
 						break;
 				}
 			}
-			dynamicILInfo.SetCode(b, methodBody.MaxStackSize);
-			return dynamicMethod.Invoke(null, a);
+			return b;
+			//dynamicILInfo.SetCode(b, methodBody.MaxStackSize);
+			//return dynamicMethod.Invoke(null, a);
 		}
 
-
+	/*	
 		public static object flared_70(InvalidProgramException e, object[] a)
 		{
 			StackTrace stackTrace = new StackTrace(e);
@@ -7707,9 +7643,9 @@ namespace FlareOn.Backdoor
 				171,
 				223
 			}, d);
-			return FLARE15.flared_67(b, metadataToken, a);
+			return FLARE15.flared_67(b);
 		}
-
+		*/
 
 		// Token: 0x060000BC RID: 188 RVA: 0x00013EB8 File Offset: 0x0001AEB8
 		public static byte[] flare_71(Dictionary<uint, int> m, byte[] b)
