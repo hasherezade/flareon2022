@@ -26,14 +26,15 @@ namespace ConsoleApp1
             return isOk;
         }
 
-        static void stage1DecodeChunks()
+        static void stage1DecodeChunks(string directory)
         {
-            decodeAndSave(FLARE15.gh_m, FLARE15.gh_b, "C:\\decoded\\flared_66.bin");
-            decodeAndSave(FLARE15.d_m, FLARE15.d_b, "C:\\decoded\\flared_47.bin");
-            decodeAndSave(FLARE15.gs_m, FLARE15.gs_b, "C:\\decoded\\flared_69.bin");
-            decodeAndSave(FLARE15.cl_m, FLARE15.cl_b, "C:\\decoded\\flared_67.bin");
-            decodeAndSave(FLARE15.pe_m, FLARE15.pe_b, "C:\\decoded\\flared_35.bin");
-            decodeAndSave(new Dictionary<uint, int>(), FLARE15.rt_b, "C:\\decoded\\flared_68.bin");
+            decodeAndSave(FLARE15.gh_m, FLARE15.gh_b, Path.Combine(directory, "flared_66.bin"));
+            decodeAndSave(FLARE15.d_m, FLARE15.d_b, Path.Combine(directory, "flared_47.bin"));
+            decodeAndSave(FLARE15.gs_m, FLARE15.gs_b, Path.Combine(directory, "flared_69.bin"));
+            decodeAndSave(FLARE15.cl_m, FLARE15.cl_b, Path.Combine(directory, "flared_67.bin"));
+            decodeAndSave(FLARE15.pe_m, FLARE15.pe_b, Path.Combine(directory, "flared_35.bin"));
+            decodeAndSave(new Dictionary<uint, int>(), FLARE15.rt_b, Path.Combine(directory, "flared_68.bin"));
+            decodeAndSave(FLARE15.wl_m, FLARE15.wl_b, Path.Combine(directory, "flare_70.bin"));
         }
 
         static byte[] decodeStage2Chunk(byte[] d, string directory, string filename)
@@ -112,7 +113,7 @@ namespace ConsoleApp1
                     }
                 }
 
-                string outExe = Path.Combine(outDirectory, "patched.exe");
+                string outExe = Path.Combine(outDirectory, "FlareOn.Backdoor_s2.exe");
                 File.WriteAllBytes(outExe, fileBuf);
             }
             catch (Exception e)
@@ -125,9 +126,9 @@ namespace ConsoleApp1
         {
             FLARE15.flare_74();
 
-            
+            stage1DecodeChunks("C:\\decoded\\stage1_decoded");
 
-            stage2DecodeDirectory("C:\\decoded\\new", "C:\\decoded\\new_decoded", "C:\\decoded\\all_tokens.txt", "C:\\decoded\\FlareOn.Backdoor_p2a.exe");
+            stage2DecodeDirectory("C:\\decoded\\new4", "C:\\decoded\\stage2_decoded", "C:\\decoded\\all_tokens.txt", "C:\\decoded\\FlareOn.Backdoor_p2a.exe");
 
             //
             Console.Write("Decoded!\n");
