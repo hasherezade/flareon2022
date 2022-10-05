@@ -19,10 +19,10 @@
 							switch (FLARE13.cs)
 							{
 							case FLARE08.A:
-								FLARE13.flared_50(FLARE07.A);
+								FLARE13.flared_50(FLARE07.A); // A -> C
 								break;
 							case FLARE08.B:
-								FLARE13.flared_50(Program.flared_39()); // B->A
+								FLARE13.flared_50(Program.flared_39()); // B -> A
 								break;
 							case FLARE08.C:
 								FLARE13.flared_50(FLARE05.flared_19()); // query the domain 1
@@ -209,6 +209,7 @@
 			if (flag)
 			{
 				FLARE05.B = 0;
+				// increment FLARE03._counter, write the counter to flare.agent.id
 				FLARE03.flared_08();
 			}
 			else
@@ -227,6 +228,7 @@
 			{
 				FLARE03._counter = 0;
 			}
+			// write the counter to flare.agent.id
 			FLARE03.flared_11();
 		}
 		
@@ -277,7 +279,7 @@
 			FLARE05.flared_29(FLARE06.DomT.C, FLARE15.flare_60(FLARE05.D).PadLeft(3, FLARE03.chars_domain[0]));
 			r = FLARE07.B;
 			byte[] d;
-			// query the domain:
+			// query the domain, i.e. "2gc20vjb1h4.flare-on.com"
 			bool flag = FLARE05.flared_30(out d);
 			
 			// verify the received IP address:
@@ -341,7 +343,8 @@
 			return result;
 		}
 		
-		
+// Write the counter to flare.agent.id:
+
 		// Token: 0x0600001C RID: 28 RVA: 0x000028A4 File Offset: 0x000098A4
 		public static bool FLARE03.flared_11()
 		{
@@ -356,7 +359,6 @@
 			return true;
 		}
 	
-
 		
 // Making the domain address:
 
@@ -383,23 +385,42 @@
 						FLARE05.A = FLARE15.flared_60((int)dt) + FLARE15.flared_60(FLARE03.flared_10().Value) + d;
 					}
 				}
-				string s = FLARE15.flared_58(FLARE03.flared_09());
+				// generate the string from the seed:
+				string s = FLARE15.flared_58(FLARE03.flared_09()); // example: "2l3ovgu7saxctbjwq01r6izhekpdnfy945m8"
+				
 				FLARE05.A = FLARE15.flared_59(FLARE05.A, s) + FLARE15.flared_61(FLARE03.flared_09()).PadLeft(3, FLARE03.chars_counter[0]) + "." + FLARE03.flared_13();
 			}
 		}
 		
-// Convert the selected characters to full domain name:
+		// Token: 0x060000A8 RID: 168 RVA: 0x000128D8 File Offset: 0x000198D8
+		public static string flared_61(int v)
+		{
+			return FLARE15.flared_63(v, FLARE03.chars_counter);
+		}
+
+// Translate string to the charset:
 
 		// Token: 0x060000A4 RID: 164 RVA: 0x000127D0 File Offset: 0x000197D0
 		public static string FLARE15.flared_59(string d, string s)
 		{
+			// example: d = "aflareon"; s = "2l3ovgu7saxctbjwq01r6izhekpdnfy945m8";
 			string text = string.Empty;
 			for (int i = 0; i < d.Length; i++)
 			{
 				text += s[FLARE03.chars_domain.IndexOf(d[i])].ToString();
 			}
+			// text = "2gc20vjb" -> 1-st part of the domain: "2gc20vjb1h4.flare-on.com"
 			return text;
 		}
+
+// Fetch the FLARE03._counter
+		// Token: 0x06000018 RID: 24 RVA: 0x000027FC File Offset: 0x000097FC
+		public static int flared_09()
+		{
+			return FLARE03._counter;
+		}
+		
+// Generate the string from the seed:
 
 		// Token: 0x060000A2 RID: 162 RVA: 0x00012708 File Offset: 0x00019708
 		public static string flared_58(int s)
@@ -418,11 +439,10 @@
 			return text2;
 		}
 		
-		
-		
 		// Token: 0x060000AC RID: 172 RVA: 0x000129A4 File Offset: 0x000199A4
 		public static string flared_63(int v, string b)
 		{
+			// example: b = "amsjl6zci20dbt35guhw7n1fqvx4k8y9rpoe", v = 0x00007203;
 			string text = string.Empty;
 			int length = b.Length;
 			do
@@ -431,6 +451,8 @@
 				v /= length;
 			}
 			while (v > 0);
+			
+			// text = "1h4" -> 2-nd part of the domain: "2gc20vjb1h4.flare-on.com"
 			return text;
 		}
 		
@@ -446,12 +468,6 @@
 			return FLARE03._agent_id;
 		}
 		
-		// Token: 0x06000018 RID: 24 RVA: 0x000027FC File Offset: 0x000097FC
-		public static int flared_09()
-		{
-			return FLARE03._counter;
-		}
-		
 
 		// Token: 0x06000020 RID: 32 RVA: 0x00002A28 File Offset: 0x00009A28
 		public static string flared_13()
@@ -461,7 +477,7 @@
 		}
 		
 		// Token: 0x06000071 RID: 113 RVA: 0x00004144 File Offset: 0x0000B144
-		public static int flared_41(int mn, int mx)
+		public static int FLARE10.flared_41(int mn, int mx)
 		{
 			bool flag = mn > mx;
 			if (flag)
