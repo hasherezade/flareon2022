@@ -6553,11 +6553,11 @@ namespace FlareOn.Backdoor
 			num += (int)b[o + 1] * 256;
 			return num + (int)b[o];
 		}
-		/*
+
 		// Token: 0x060000B2 RID: 178 RVA: 0x00012B84 File Offset: 0x00019B84
-		public static string flared_66(int t)
+		public static string flared_66(Module module, int t)
 		{
-			Module module = typeof(Program).Module;
+			//Module module = typeof(Program).Module;
 			string text = "";
 			string text2 = "";
 			MethodInfo methodInfo = (MethodInfo)module.ResolveMethod(t);
@@ -6597,10 +6597,10 @@ namespace FlareOn.Backdoor
 			}
 			return stringBuilder.ToString();
 		}
-		*/
-		public static byte[] flared_69(string h)
+
+		public static byte[] flared_69(string location, string h)
 		{
-			string location = Assembly.GetExecutingAssembly().Location;
+			//string location = Assembly.GetExecutingAssembly().Location;
 			FLARE09 flare = new FLARE09();
 			FLARE09.flared_35(location);
 			byte[] array = null;
@@ -7629,12 +7629,12 @@ namespace FlareOn.Backdoor
 			//return dynamicMethod.Invoke(null, a);
 		}
 
-	/*	
-		public static object flared_70(InvalidProgramException e, object[] a)
+		/*
+		public static object flared_70(InvalidProgramException e, object[] a, Module module)
 		{
 			StackTrace stackTrace = new StackTrace(e);
 			int metadataToken = stackTrace.GetFrame(0).GetMethod().MetadataToken;
-			string h = FLARE15.flared_66(metadataToken);
+			string h = FLARE15.flared_66(module, metadataToken);
 			byte[] d = FLARE15.flared_69(h);
 			byte[] b = FLARE12.flared_47(new byte[]
 			{
@@ -7644,8 +7644,8 @@ namespace FlareOn.Backdoor
 				223
 			}, d);
 			return FLARE15.flared_67(b);
-		}
-		*/
+		}*/
+
 
 		// Token: 0x060000BC RID: 188 RVA: 0x00013EB8 File Offset: 0x0001AEB8
 		public static byte[] flare_71(Dictionary<uint, int> m, byte[] b)

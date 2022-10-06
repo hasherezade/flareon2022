@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using FlareOn.Backdoor;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace ConsoleApp1
 {
@@ -79,13 +81,13 @@ namespace ConsoleApp1
             return tokenToOffset;
         }
 
-        static void stage2DecodeDirectory(string sourceDirectory, string outDirectory, string tokensFile, string fileToPatch)
+        static void stage2DecodeDirectory(string sourceDirectory, string outDirectory, Dictionary<int, int> tokenToOffset, byte[] fileBuf)
         {
             try
             {
                 const int hdrSize = 0xC;
-                byte []fileBuf = File.ReadAllBytes(fileToPatch);
-                var tokenToOffset = createMapOfTokens(tokensFile);
+                //byte []fileBuf = File.ReadAllBytes(fileToPatch);
+                //var tokenToOffset = createMapOfTokens(tokensFile);
                 var txtFiles = Directory.EnumerateFiles(sourceDirectory, "*.txt", SearchOption.AllDirectories);
                 
                 foreach (string currentFile in txtFiles)
@@ -113,8 +115,8 @@ namespace ConsoleApp1
                     }
                 }
 
-                string outExe = Path.Combine(outDirectory, "FlareOn.Backdoor_s2.exe");
-                File.WriteAllBytes(outExe, fileBuf);
+                //string outExe = Path.Combine(outDirectory, "FlareOn.Backdoor_s2_p1.exe");
+                //File.WriteAllBytes(outExe, fileBuf);
             }
             catch (Exception e)
             {
@@ -122,16 +124,147 @@ namespace ConsoleApp1
             }
         }
 
-        static void Main(string[] args)
+
+        static void decodeByTables()
         {
             FLARE15.flare_74();
 
+            byte []fileBuf = File.ReadAllBytes("C:\\decoded\\FlareOn.Backdoor_p2a.exe");
+            var tokenToOffset = createMapOfTokens("C:\\decoded\\file_offsets.txt");
             stage1DecodeChunks("C:\\decoded\\stage1_decoded");
 
-            stage2DecodeDirectory("C:\\decoded\\new4", "C:\\decoded\\stage2_decoded", "C:\\decoded\\all_tokens.txt", "C:\\decoded\\FlareOn.Backdoor_p2a.exe");
 
+            stage2DecodeDirectory("C:\\decoded\\new4", "C:\\decoded\\stage2_decoded", tokenToOffset, fileBuf);
+
+            string outExe = Path.Combine("C:\\decoded\\new4", "FlareOn.Backdoor_s2_p1.exe");
+            File.WriteAllBytes(outExe, fileBuf);
             //
             Console.Write("Decoded!\n");
+        }
+
+        public static byte[] findByMethodHash(Module module, string modulePath, int metadataToken)
+        {
+            string h = FLARE15.flared_66(module, metadataToken);
+            byte[] d = FLARE15.flared_69(modulePath, h);
+            if (d.Length == 0) return new byte[] { };
+
+            byte[] b = FLARE12.flared_47(new byte[]
+            {
+                18,
+                120,
+                171,
+                223
+            }, d);
+            return FLARE15.flared_67(b);
+        }
+
+
+        static bool decodeByReflection(string offsetsFile, string fileToPatch, string outExe)
+        {
+            const int hdrSize = 0xC;
+            byte[] fileBuf = File.ReadAllBytes(fileToPatch);
+
+            Dictionary<int, int> tokenToOffset = createMapOfTokens(offsetsFile);
+            Assembly a = Assembly.LoadFrom(fileToPatch);
+            Module[] m = a.Modules.ToArray();
+            Console.WriteLine(m.Length);
+            if (m.Length == 0) return false;
+
+            Module module = m[0];
+
+            Type[] tArray = module.FindTypes(Module.FilterTypeName, "FLARE*");
+            int notFound = 0;
+
+            foreach (Type t in tArray)
+            {
+                Console.WriteLine("Found a module beginning with FLARE*: {0}.", t.Name);
+
+                foreach (MethodInfo mi in t.GetMethods())
+                {
+                    var metadataToken = mi.MetadataToken;
+                    string name = mi.Name;
+                    if (!mi.IsStatic) { continue; }
+                    if (!name.StartsWith("flared_")) { continue; }
+
+                    //if (name.StartsWith("flared_28")) { continue; } //skip
+                    Console.WriteLine("Method: {0:X} {1}", metadataToken, mi.Name);
+
+                    string h = FLARE15.flared_66(module, metadataToken);
+                    //Console.WriteLine(System.String.Format(@"Token: '{0:X}' '{1}'", metadataToken, h));
+                    byte[] decChunk = findByMethodHash(module, fileToPatch, metadataToken);
+                    if (decChunk.Length == 0)
+                    {
+                        Console.WriteLine("NOT found: {0:X} {1}", metadataToken, mi.Name);
+                        notFound++;
+                        continue;
+                    }
+                    int offset = 0;
+                    if (tokenToOffset.ContainsKey(metadataToken))
+                    {
+                        offset = tokenToOffset[metadataToken];
+                    }
+                    if (offset == 0)
+                    {
+                        Console.WriteLine("Offset NOT found: {0:X} {1}", metadataToken, mi.Name);
+                        notFound++;
+                        continue;
+                    }
+
+                    MethodBody methodBody = mi.GetMethodBody();
+                    byte[] currentBody = methodBody.GetILAsByteArray();
+                    if (currentBody.Length != decChunk.Length)
+                    {
+                        Console.WriteLine("Length mismatch: {0:X} {1}", metadataToken, mi.Name);
+                        notFound++;
+                        continue;
+                    }
+                    // offset where the method body starts (headers may have various sizes)
+                    int bodyOffset = 0;
+                    for (var i = offset; i < (offset + hdrSize + decChunk.Length); i++)
+                    {
+                        //memcmp:
+                        
+                        bool isOk = true;
+                        for (var k = 0; k < decChunk.Length; k++)
+                        {
+                            if (fileBuf[i + k] != currentBody[k])
+                            {
+                                isOk = false;
+                                break;
+                            }
+                        }
+                        if (isOk)
+                        {
+                            bodyOffset = i;
+                            break;
+                        }
+
+                    }
+                    if (bodyOffset == 0)
+                    {
+                        Console.WriteLine("Function body not found: {0:X} {1}", metadataToken, mi.Name);
+                        notFound++;
+                        continue;
+                    }
+
+                    Buffer.BlockCopy(decChunk, 0, fileBuf, bodyOffset, decChunk.Length);
+
+                    Console.WriteLine(System.String.Format("\tParsed: '{0:X}' '{1:X}'", metadataToken, offset));
+                }
+            }
+
+            Console.WriteLine("NOT found count: {0}", notFound);
+            File.WriteAllBytes(outExe, fileBuf);
+
+            return false;
+        }
+
+        static void Main(string[] args)
+        {
+            //FLARE15.flare_74();
+            string outExe = Path.Combine("C:\\decoded\\stage2_decoded", "FlareOn.Backdoor_stage2.exe");
+            decodeByReflection("C:\\decoded\\file_offsets.txt", "C:\\decoded\\FlareOn.Backdoor_p2a.exe", outExe);
+
         }
     }
 }
