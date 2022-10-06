@@ -172,7 +172,7 @@ namespace ConsoleApp1
 
             Module module = m[0];
 
-            Type[] tArray = module.FindTypes(Module.FilterTypeName, "FLARE*");
+            Type[] tArray = module.FindTypes(Module.FilterTypeName, "*");
             int notFound = 0;
 
             foreach (Type t in tArray)
