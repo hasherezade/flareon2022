@@ -9439,11 +9439,11 @@ readline.question(`Enter flag: `, flag => {
         }
         state = 682318978;
         continue;
-      case 1010356043://0
+      case 1010356043:
         if (Math.random() < 0.5) {
-          //b[42] += b[4] + b[5] + b[35] + b[12] + b[22] + b[19] + Math.floor(Math.random() * 256);
-          //b[42] &= 0xFF;
-        } else {//p2:
+          b[42] += b[4] + b[5] + b[35] + b[12] + b[22] + b[19] + Math.floor(Math.random() * 256);
+          b[42] &= 0xFF;
+        } else {
           b[29] -= b[37] + b[23] + b[22] + b[24] + b[26] + b[10] + 7;
           b[29] &= 0xFF;
         }
