@@ -130,6 +130,9 @@ namespace FlareOn.Backdoor
 		public static void _DecodeAndSaveFlag()
 		{
 			Console.WriteLine("_DecodeAndSaveFlag");
+			Console.WriteLine("Complete string: {0}", TaskClass.ReverseString(TaskClass.FlagSectionNameHash));
+			System.Environment.Exit(1); //exit here...
+			// decoding of the flag works only on the original application
 			byte[] sectionContent = Util.FindSectionStartingWithHash(TaskClass.ReverseString(TaskClass.FlagSectionNameHash));
 			byte[] hash = TaskClass.CommandsAndMethods.GetHashAndReset();
 			byte[] flagContent = FLARE12.RC4(hash, sectionContent);
